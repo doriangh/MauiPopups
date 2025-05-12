@@ -43,8 +43,8 @@ public class AndroidMopups : IPopupPlatform
     {
         HandleAccessibility(true, page.DisableAndroidAccessibilityHandling, page);
 
-        page.Parent = MauiApplication.Current.Application.Windows[0].Content as Element;
-        page.Parent ??= MauiApplication.Current.Application.Windows[0].Content as Element;
+        var mainPage = (Element)MauiApplication.Current.Application.Windows[0].Content;
+        mainPage.AddLogicalChild(page);
 
         var handler = page.Handler ??= new PopupPageHandler(page.Parent.FindMauiContext());
 
@@ -68,7 +68,7 @@ public class AndroidMopups : IPopupPlatform
             }
 
             renderer.DisconnectHandler(); //?? no clue if works
-            page.Parent = null;
+            page.Parent?.RemoveLogicalChild(page);
 
             return PostAsync(DecoreView);
         }

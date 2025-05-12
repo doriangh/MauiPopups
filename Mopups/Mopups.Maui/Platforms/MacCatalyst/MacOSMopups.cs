@@ -1,12 +1,11 @@
 ﻿using CoreGraphics;
-
 using Microsoft.Maui.Controls.Compatibility.Platform.iOS;
 using Microsoft.Maui.Platform;
 using Mopups.Interfaces;
 using Mopups.Pages;
 using Mopups.Platforms.MacCatalyst;
+using UIKit;
 
-using UIKit; 
 namespace Mopups.MacCatalyst.Implementation;
 
 internal class MacOSMopups : IPopupPlatform
@@ -22,7 +21,8 @@ internal class MacOSMopups : IPopupPlatform
 
     public Task AddAsync(PopupPage page)
     {
-        page.Parent = Application.Current.MainPage;
+        var mainPage = Application.Current.MainPage;
+        mainPage.AddLogicalChild(page);
 
         page.DescendantRemoved += HandleChildRemoved;
 
@@ -38,13 +38,15 @@ internal class MacOSMopups : IPopupPlatform
         {
             UIScene connectedScene = null;
 
-            if(page.Parent != null && page.Parent.Handler != null && page.Parent.Handler.MauiContext != null) {
+            if (page.Parent != null && page.Parent.Handler != null && page.Parent.Handler.MauiContext != null)
+            {
                 var nativeMainPage = page.Parent.ToPlatform(page.Parent.Handler.MauiContext);
                 connectedScene = nativeMainPage.Window.WindowScene;
             }
-            
-            if(connectedScene == null) 
-                connectedScene = UIApplication.SharedApplication.ConnectedScenes.ToArray().FirstOrDefault(x => x.ActivationState == UISceneActivationState.ForegroundActive);
+
+            if (connectedScene == null)
+                connectedScene = UIApplication.SharedApplication.ConnectedScenes.ToArray()
+                    .FirstOrDefault(x => x.ActivationState == UISceneActivationState.ForegroundActive);
 
             if (connectedScene != null && connectedScene is UIWindowScene windowScene)
                 window = new PopupWindow(windowScene);
@@ -67,7 +69,7 @@ internal class MacOSMopups : IPopupPlatform
 
         handler.ViewController.ModalPresentationStyle = UIModalPresentationStyle.OverCurrentContext;
         handler.ViewController.ModalTransitionStyle = UIModalTransitionStyle.CoverVertical;
-        
+
 
         return window.RootViewController.PresentViewControllerAsync(handler.ViewController, false);
 
@@ -102,7 +104,7 @@ internal class MacOSMopups : IPopupPlatform
         if (handler != null && viewController != null && !viewController.IsBeingDismissed)
         {
             var window = viewController.View?.Window;
-            page.Parent = null;
+            page.Parent?.RemoveLogicalChild(page);
 
             if (window != null)
             {
@@ -152,5 +154,4 @@ internal class MacOSMopups : IPopupPlatform
         var view = e.Element;
         DisposeModelAndChildrenHandlers((VisualElement)view);
     }
-
 }
