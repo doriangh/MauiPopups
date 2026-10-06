@@ -1,8 +1,8 @@
 ﻿using Mopups.Interfaces;
 using Mopups.Pages;
 using Mopups.Platforms.iOS;
-using UIKit;
 
+using UIKit;
 namespace Mopups.iOS.Implementation;
 
 internal class iOSMopups : IPopupPlatform
@@ -16,7 +16,7 @@ internal class iOSMopups : IPopupPlatform
 
     public Task AddAsync(PopupPage page)
     {
-        var mainPage = Application.Current?.MainPage;
+        var mainPage = Application.Current.MainPage;
         mainPage.AddLogicalChild(page);
 
         var keyWindow = GetKeyWindow(UIApplication.SharedApplication);
@@ -88,7 +88,7 @@ internal class iOSMopups : IPopupPlatform
         if (handler != null && viewController != null && !viewController.IsBeingDismissed)
         {
             var window = viewController.View?.Window;
-            page.Parent.RemoveLogicalChild(page);
+            page.Parent?.RemoveLogicalChild(page);
 
             if (window != null)
             {

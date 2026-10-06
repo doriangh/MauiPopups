@@ -4,12 +4,12 @@ public static class MauiExtensions
 {
     public static IMauiContext FindMauiContext(this Element element, bool fallbackToAppMauiContext = true)
     {
-        if (element is IElement { Handler.MauiContext: not null } fe)
+        if (element is IElement fe && fe.Handler?.MauiContext != null)
             return fe.Handler.MauiContext;
 
         foreach (var parent in element.GetParentsPath())
         {
-            if (parent is IElement { Handler.MauiContext: not null } parentView)
+            if (parent is IElement parentView && parentView.Handler?.MauiContext != null)
                 return parentView.Handler.MauiContext;
         }
 
@@ -28,5 +28,5 @@ public static class MauiExtensions
     }
 
     internal static bool IsApplicationOrNull(object? element) =>
-        element is null or IApplication;
+        element == null || element is IApplication;
 }
