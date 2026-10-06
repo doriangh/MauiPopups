@@ -42,12 +42,12 @@ namespace Mopups.Platforms.iOS
         {
             if (disposing)
             {
-                _renderer.ViewController.View?.RemoveGestureRecognizer(_tapGestureRecognizer);
-                _renderer = null; 
+                _renderer?.ViewController?.View?.RemoveGestureRecognizer(_tapGestureRecognizer);
+                _renderer = null;
             }
 
-            base.Dispose(disposing);
             _isDisposed = true;
+            base.Dispose(disposing);
         }
 
 
@@ -80,7 +80,7 @@ namespace Mopups.Platforms.iOS
                     return;
 
                 var superviewFrame = handler.Handler.PlatformView.Superview.Frame;
-                var applicationFrame = UIScreen.MainScreen.ApplicationFrame;
+                var applicationFrame = UIScreen.MainScreen.Bounds;
 
                 var systemPadding = new Thickness
                 {
